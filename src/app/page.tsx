@@ -1,9 +1,12 @@
+import { Gallery } from '@/components/gallery';
+
 export default function Home() {
+
   return (
-    <div className="">
-      <main className="">
-   
-      </main>
-    </div>
+    <main className="min-h-screen pt-8 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <Gallery />
+      </div>
+    </main>
   );
 }

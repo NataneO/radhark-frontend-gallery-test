@@ -1,21 +1,24 @@
+'use client'
 import { useState, useEffect, useCallback } from 'react';
 import { GalleryData } from '@/types/Image';
 import { BEARER_TOKEN, LIST_IMAGES_ENDPOINT } from '@/utils/apiConfig'; 
 
-const DEFAULT_PAGE_SIZE = 4; 
+const DEFAULT_PAGE_SIZE = 20;
 
 export const useImages = () => {
   const [items, setItems] = useState<GalleryData['items']>([]); 
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null); 
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const fetchImages = useCallback(async (tokenToUse: string | null) => {
     try {
-      setLoading(true);
+      if (!tokenToUse) {
+        setInitialLoading(true);
+      }
       setError(null);
-      
+
       if (!BEARER_TOKEN) {
          throw new Error("Authentication bearer token not configured.");
       }
@@ -52,7 +55,9 @@ export const useImages = () => {
         setError('Unknown error');
       }
     } finally {
-      setLoading(false);
+      if (!tokenToUse) {
+        setInitialLoading(false);
+      }
     }
   }, [pageSize]); 
 
@@ -70,7 +75,7 @@ export const useImages = () => {
 
   return { 
       items, 
-      loading, 
+      loading: initialLoading,
       error, 
       pageSize,
       nextPageToken, 

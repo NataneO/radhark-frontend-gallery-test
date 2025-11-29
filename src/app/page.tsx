@@ -1,12 +1,12 @@
-import { Gallery } from '@/components/gallery';
+import { Gallery } from '@/components/gallery/index';
 
 export default function Home() {
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="container mx-auto ">
+    <main className="container min-h-screen px-4 mx-auto">
+    
         <Gallery />
-      </div>
+
     </main>
   );
 }

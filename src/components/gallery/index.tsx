@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,16 @@ import { useImages } from '@/hooks/useImages';
 import { handleFileUpload, handlePlusClick } from '@/handlers/galleryHandlers';
 import { BEARER_TOKEN, BASE_URL } from '@/utils/apiConfig';
 
-const Thumbnail: React.FC<{ url: string; isActive?: boolean; onClick: () => void }> = ({ url, isActive, onClick }) => (
+const Thumbnail: React.FC<{ url: string; isActive?: boolean; onClick: () => void }> = React.memo(({ url, isActive, onClick }) => (
   <div
     onClick={onClick}
     className={`w-20 h-20 bg-gray-200 rounded-lg overflow-hidden border-2 cursor-pointer ${
-      isActive ? "border-cyan-500" : "border-transparent hover:border-gray-400"
+      isActive ? "border-cyan-500 shadow-md" : "border-transparent hover:border-gray-400"
     }`}
   >
     <img src={url} alt="Thumbnail" className="w-full h-full object-cover" />
   </div>
-);
+));
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -29,41 +29,42 @@ function formatDate(dateString: string): string {
   return new Intl.DateTimeFormat('pt-BR', options).format(date);
 }
 
-
-
 export function Gallery() {
   const { items, loading, error, pageSize, nextPageToken, loadNextPage } = useImages(); 
-  
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0); 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleGoToNextPage = () => {
+  const handleGoToNextPage = useCallback(() => {
     const nextStartIndex = (currentPage + 1) * pageSize;
-    
     if (nextStartIndex < items.length) {
       setCurrentPage(currentPage + 1);
       setSelectedIndex(0);
-      console.log('go to next page (items already loaded)');
+      console.log('Go to next page (items already loaded).');
       return;
     }
 
     if (nextPageToken) {
       loadNextPage(); 
-      console.log( 'trigger request to load more items');
+      console.log('Here, trigger a request to load more items.');
       return;
     }
 
-    console.log('pagination end');
-  };
-
-  const handleGoToPreviousPage = () => {
+    console.log('End of gallery.');
+  }, [currentPage, items.length, loadNextPage, nextPageToken, pageSize]);
+  const handleGoToPreviousPage = useCallback(() => {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setSelectedIndex(0);
     }
-  };
+  }, [currentPage]);
 
+  const startIndex = currentPage * pageSize;
+  const endIndex = startIndex + pageSize - 1;
+  const paginatedItems = items.slice(startIndex > 0 ? startIndex - 2 : startIndex, endIndex);
+  const selectedItem = paginatedItems[selectedIndex];
+
+  const isNextDisabled = !nextPageToken && (startIndex + pageSize) >= items.length;
   async function uploadFileToSignedUrl(signedUrl: string, file: File) {
     console.log(signedUrl)
  
@@ -99,17 +100,6 @@ export function Gallery() {
     }
   }
 
-  //TODO: adjust pagination display logic
-  console.log("@@@@@@@@@@@@@ currentpage", currentPage)
-  console.log("@@@@@@@@@@@@@@ pagesize", pageSize)
-  const startIndex = currentPage * pageSize;
-  const endIndex = startIndex + pageSize -1;
-  startIndex == 0 ? console.log('1'): console.log('2')
-  const paginatedItems = items.slice(startIndex > 0 ? startIndex- 2  : startIndex, endIndex);
-  const selectedItem = paginatedItems[selectedIndex];
-  
-  const isNextDisabled = !nextPageToken && (startIndex + pageSize) >= items.length;
-
   return (
     <Card className="w-lg max-w-4xl mx-auto shadow-2xl ">
       <CardContent className="p-6 space-y-4">
@@ -118,15 +108,12 @@ export function Gallery() {
         {!loading && !error && (
           <>
             <div className="relative flex items-center">
-<Button
+              <Button
                 onClick={handleGoToPreviousPage}
                 disabled={currentPage === 0}
   className="absolute left-0 flex items-center justify-center"
               >
-                {
-                //TODO:adjust chrevon size
-                }
-                <ChevronLeft className="w-8 h-8 md:w-10 lg:w-12 " />
+                <ChevronLeft className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" />
             </Button>
               <ScrollArea className="w-[86%] whitespace-nowrap pb-2 mx-8">
                 <div className="flex space-x-3 items-center">
@@ -167,7 +154,7 @@ export function Gallery() {
                 disabled={isNextDisabled}
                 className="absolute right-0 flex items-center justify-center"
               >
-                <ChevronRight className="w-32 h-32 md:w-10 lg:w-12 " />
+                <ChevronRight className="w-32 h-32 md:w-10 md:h-10 lg:w-12 lg:h-12" />
             </Button>
           </div>
 
@@ -179,14 +166,14 @@ export function Gallery() {
           <div className="p-4 bg-gray-50 rounded-lg border">
             <h3 className="text-lg font-semibold mb-2">Detalhes do Documento</h3>
             <p className="text-sm text-gray-700">
-              Data de criacao: {formatDate(selectedItem.created_at)}
+                 <strong>Data de criacao:</strong> {selectedItem ? formatDate(selectedItem.created_at) : 'N/A'}
             </p>
-          </div>
-          <div className="flex flex-col space-y-2 justify-center">
-            <Button className="w-full h-12 bg-cyan-500 hover:bg-cyan-600 text-white shadow-md">
-              <Download className="w-5 h-5 mr-2" />
-              Baixar atestado
-            </Button>
+              </div>
+              <div className="flex flex-col space-y-2 justify-center">
+                <Button className="w-full h-12 bg-cyan-500 hover:bg-cyan-600 text-white shadow-md">
+                  <Download className="w-5 h-5 mr-2" />
+                  Baixar atestado
+                </Button>
 
                 <Button variant="outline" className="w-full h-12 text-gray-700 border-gray-300 hover:bg-gray-100">
                   <Share className="w-5 h-5 mr-2" />

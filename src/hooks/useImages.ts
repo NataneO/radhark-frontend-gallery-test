@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GalleryData, ImageItem } from '@/types/Image'; 
+import { GalleryData } from '@/types/Image';
 import { BEARER_TOKEN, LIST_IMAGES_ENDPOINT } from '@/utils/apiConfig'; 
 
+const DEFAULT_PAGE_SIZE = 4; 
 
 export const useImages = () => {
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [items, setItems] = useState<GalleryData['items']>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null); 
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-
-  const fetchImages = useCallback(async () => {
+  const fetchImages = useCallback(async (tokenToUse: string | null) => {
     try {
       setLoading(true);
       setError(null);
@@ -20,22 +22,29 @@ export const useImages = () => {
 
       const headers = {
         'Authorization': `Bearer ${BEARER_TOKEN}`,
-        'Content-Type': 'application/json',
       };
 
-      const response = await fetch(LIST_IMAGES_ENDPOINT, {
-        method: 'GET',
-        headers: headers,
-      });
+      let pageSizeToUse = pageSize;
+      if (tokenToUse) {
+        pageSizeToUse = 3;
+      }
+
+      let url = `${LIST_IMAGES_ENDPOINT}?page_size=${pageSizeToUse}`;
+      if (tokenToUse) {
+        url += `&page_token=${tokenToUse}`;
+      }
+
+      const response = await fetch(url, { method: 'GET', headers: headers });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        throw new Error(`Failed to fetch images: ${response.status} - ${errorData.message || 'Network error'}`);
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(`Failed to fetch images: ${response.status} - ${errorData.detail || 'Network error'}`);
       }
 
       const data: GalleryData = await response.json();
-      setImages(data.items); 
-    
+      
+      setItems(prevItems => [...prevItems, ...data.items]);
+      setNextPageToken(data.page_token || null);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -45,11 +54,26 @@ export const useImages = () => {
     } finally {
       setLoading(false);
     }
-  }, []); 
+  }, [pageSize]); 
+
+  const loadNextPage = () => {
+    if (nextPageToken === null) {
+      console.log('cant load next page. token not found');
+      return;
+    }
+    fetchImages(nextPageToken);
+  };
 
   useEffect(() => {
-    fetchImages();
+    fetchImages(null);
   }, [fetchImages]);
 
-  return { images, loading, error, fetchImages };
+  return { 
+      items, 
+      loading, 
+      error, 
+      pageSize,
+      nextPageToken, 
+    loadNextPage
+  };
 };

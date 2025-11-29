@@ -27,6 +27,7 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+       paginationArrow: "h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12",
       },
     },
     defaultVariants: {

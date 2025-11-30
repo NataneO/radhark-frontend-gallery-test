@@ -1,26 +1,27 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react';
-import { GalleryData } from '@/interfaces/Image';
+import { GalleryData } from '@/interfaces/gallery';
 import { BEARER_TOKEN, LIST_IMAGES_ENDPOINT } from '@/utils/apiConfig'; 
 
 const DEFAULT_PAGE_SIZE = 15;
 
 export const useImages = () => {
-  const [items, setItems] = useState<GalleryData['items']>([]); 
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [items, setItems] = useState<GalleryData['items']>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [nextPageToken, setNextPageToken] = useState<string | null>(null); 
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const pageSize = DEFAULT_PAGE_SIZE;
 
   const fetchImages = useCallback(async (tokenToUse: string | null) => {
     try {
       if (!tokenToUse) {
-        setInitialLoading(true);
+        setLoading(true);
       }
       setError(null);
 
       if (!BEARER_TOKEN) {
-         throw new Error("Authentication bearer token not configured.");
+        throw new Error("Authentication bearer token not configured.");
+    
       }
 
       const headers = {
@@ -41,7 +42,13 @@ export const useImages = () => {
 
       const data: GalleryData = await response.json();
       
-      setItems(prevItems => [...prevItems, ...data.items]);
+      if (!tokenToUse) {
+        setItems(data.items);
+      } else {
+
+        setItems(prevItems => [...prevItems, ...data.items]);
+      }
+
       setNextPageToken(data.page_token || null);
     } catch (err) {
       if (err instanceof Error) {
@@ -51,10 +58,12 @@ export const useImages = () => {
       }
     } finally {
       if (!tokenToUse) {
-        setInitialLoading(false);
+        setLoading(false);
       }
+      setLoading(false);
     }
   }, [pageSize]); 
+
 
   const loadNextPage = () => {
     if (nextPageToken === null) {
@@ -75,13 +84,16 @@ export const useImages = () => {
     fetchImages(null);
   }, [fetchImages]);
 
-  return { 
-      items, 
-      loading: initialLoading,
-      error, 
+
+  return {
+      items,
+      loading,
+      error,
       pageSize,
-      nextPageToken, 
-    loadNextPage,
-    refreshPageView
+      nextPageToken,
+      loadNextPage,
+      refreshPageView
   };
 };
+  
+ 

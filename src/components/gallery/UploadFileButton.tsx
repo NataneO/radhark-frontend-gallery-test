@@ -3,34 +3,38 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
 
-const UploadFileButton: React.FC<{ onUpload: () => void}> =  (onUpload) => {
+interface UploadFileButtonProps {
+  onUpload: () => void;
+}
+const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <div className="flex justify-end">
       <Button
         variant="outline"
-        className="w-50 h-16 my-4 flex-shrink-0 border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold hover:border-cyan-600 transition-colors"
+        className="w-50 h-16 my-4  border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold"
         onClick={() => {
           if (fileInputRef.current) {
             handlePlusClick(fileInputRef);
           }
         }}
       >
-        <Plus className="w-5 h-5" /> <>Adicionar arquivo</>
+        <Plus className="w-5 h-5" /> Adicionar 
       </Button>
       <input
         type="file"
         ref={fileInputRef}
         style={{ display: 'none' }}
-        onChange={(event) => {
+        onChange={async (event) => {
           if (fileInputRef.current) {
-            handleFileUpload(event, fileInputRef);
-            onUpload;
+            await handleFileUpload(event, fileInputRef);
+            onUpload();
           }
         }}
       />
     </div>
-  )
+  );
 };
 
 export default UploadFileButton;

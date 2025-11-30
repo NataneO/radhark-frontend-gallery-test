@@ -1,8 +1,9 @@
 import UploadFileButton from "./UploadFileButton";
 
-const GalleryHeader: React.FC = () => (
+const GalleryHeader: React.FC<{refreshPageView: () => void;}> =  ({ refreshPageView}) => (
+
   <>
-     <UploadFileButton />
+     <UploadFileButton onUpload={refreshPageView} />
   <div className="flex items-center justify-center h-[300px]">
            
     <h1 className="text-4xl font-extrabold text-center">Galeria</h1>
@@ -10,4 +11,4 @@ const GalleryHeader: React.FC = () => (
     </>
 );
 
-export default GalleryHeader;
+export default GalleryHeader; 

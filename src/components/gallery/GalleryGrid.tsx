@@ -1,19 +1,28 @@
 'use client'
 
 import { GalleryGridProps } from '@/interfaces/gallery';
-import UploadFileButton from './UploadFileButton';
 import GalleryImage from './GalleryImage';
+import { Skeleton } from '@/components/ui/skeleton';
 
+const SkeletonBody = () => {
+  const skeletonCount = 15;
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      {Array.from({ length: skeletonCount }).map((_, index) => (
+        <Skeleton key={index} className="w-64 h-64 bg-gray-400" />
+      ))}
+    </div>
+  );
+}
 const GalleryGrid: React.FC<GalleryGridProps> = ({ items, loading, error }) => {
- 
- 
 
   return (
     <div>
-        {loading && <p>Loading...</p>}
+      {loading && <SkeletonBody/>}
         {error && <p>Error: {error}</p>}
         {!loading && !error && (
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
 
         <GalleryImage items={items}/>
         </div>

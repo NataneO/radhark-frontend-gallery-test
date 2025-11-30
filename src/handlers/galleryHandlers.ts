@@ -15,7 +15,6 @@ export async function handleFileUpload(
       await uploadImageToSignedUrl(signedUrl, file)
 
      await uploadUrlMetadata(signedUrl)
-      
 
     } catch (error) {
       console.error('Error during upload or save:', error);
@@ -34,3 +33,7 @@ export const handleScroll = (nextPageToken: string | null, loadNextPage: () => v
     loadNextPage();
   }
 };
+
+export const handleUpload = (loadNextPage: () => void) => {
+
+}

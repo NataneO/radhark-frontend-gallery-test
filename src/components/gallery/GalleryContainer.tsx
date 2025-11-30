@@ -7,7 +7,7 @@ import GalleryHeader from './GalleryHeader';
 import { handleScroll } from '@/handlers/galleryHandlers';
 
 export function GalleryContainer() {
-  const { items, loading, error, nextPageToken, loadNextPage } = useImages();
+  const { items, loading, error, nextPageToken, loadNextPage, refreshPageView } = useImages();
 
   useEffect(() => {
     const scrollHandler = () => handleScroll(nextPageToken, loadNextPage);
@@ -19,13 +19,11 @@ export function GalleryContainer() {
 
   return (
     <div className="flex flex-col justify-between h-full">
-      <GalleryHeader />
+      <GalleryHeader refreshPageView={refreshPageView} />
       <GalleryGrid
         items={items}
         loading={loading}
         error={error}
-        onLoadMore={loadNextPage}
-        nextPageToken={nextPageToken}
       />
     </div>
   );

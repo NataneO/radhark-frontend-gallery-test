@@ -64,7 +64,14 @@ export const useImages = () => {
     fetchImages(nextPageToken);
   };
 
+
+   const refreshPageView = () => {
+      console.log("entrou aqui")
+    fetchImages(null);
+  };
+
   useEffect(() => {
+  
     fetchImages(null);
   }, [fetchImages]);
 
@@ -74,6 +81,7 @@ export const useImages = () => {
       error, 
       pageSize,
       nextPageToken, 
-    loadNextPage
+    loadNextPage,
+    refreshPageView
   };
 };

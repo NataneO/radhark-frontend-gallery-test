@@ -3,8 +3,7 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
 
-const UploadFileButton: React.FC = () => {
-  
+const UploadFileButton: React.FC<{ onUpload: () => void}> =  (onUpload) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   return (
     <div className="flex justify-end">
@@ -26,6 +25,7 @@ const UploadFileButton: React.FC = () => {
         onChange={(event) => {
           if (fileInputRef.current) {
             handleFileUpload(event, fileInputRef);
+            onUpload;
           }
         }}
       />

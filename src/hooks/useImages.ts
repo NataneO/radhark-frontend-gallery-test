@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react';
-import { GalleryData } from '@/types/Image';
+import { GalleryData } from '@/interfaces/Image';
 import { BEARER_TOKEN, LIST_IMAGES_ENDPOINT } from '@/utils/apiConfig'; 
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 17;
 
 export const useImages = () => {
   const [items, setItems] = useState<GalleryData['items']>([]); 

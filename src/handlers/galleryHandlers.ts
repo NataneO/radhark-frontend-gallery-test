@@ -1,42 +1,42 @@
-// 'galleryHandlers.ts'
-import { BASE_URL, BEARER_TOKEN } from '@/utils/apiConfig';
+;
+import { uploadImageToSignedUrl, uploadSignedUrl, uploadUrlMetadata } from '@/services/uploadImage';
 
 
-export const handleFileUpload = async (
+export async function handleFileUpload(
   event: React.ChangeEvent<HTMLInputElement>,
   fileInputRef: React.RefObject<HTMLInputElement | null>,
-  uploadFileToSignedUrl: (signedUrl: string, file: File) => Promise<void>
-) => {
+) {
   const file = event.target.files?.[0];
   if (file) {
     console.log("File selected:", file.name);
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/signed`, {
-        method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-        'Authorization': `Bearer ${BEARER_TOKEN}`,
-      },
-        body: JSON.stringify({ file_name: file.name, mimetype: file.type }),
-    });
+      const signedUrl = await uploadSignedUrl(file)
 
-      if (!response.ok) {
-        throw new Error('Failed to get signed URL');
+      await uploadImageToSignedUrl(signedUrl, file)
+
+     await uploadUrlMetadata(signedUrl)
+      
+
+    } catch (error) {
+      console.error('Error during upload or save:', error);
     }
-
-      const data = await response.json();
-      const signedUrl = data.url;
-      console.log('Signed url obtained:', signedUrl);
-      await uploadFileToSignedUrl(signedUrl, file);
-      console.log("File uploaded successfully");
-  } catch (error) {
-      console.error("Error uploading file:", error);
   }
 }
-};
-
   
 export const handlePlusClick = (fileInputRef: React.RefObject<HTMLInputElement  | null>) => {
     fileInputRef?.current?.click();
 };
   
+
+ export const handleScroll = (
+   containerRef: React.RefObject<HTMLDivElement | null>,
+  nextPageToken: string | null,
+  onLoadMore: () => void
+) => {
+  if (containerRef.current) {
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    if (scrollTop + clientHeight >= scrollHeight - 5 && nextPageToken) {
+      onLoadMore();
+    }
+  }
+};

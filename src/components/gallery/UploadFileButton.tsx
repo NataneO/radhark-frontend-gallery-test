@@ -7,17 +7,17 @@ const UploadFileButton: React.FC = () => {
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <>
+    <div className="flex justify-end">
       <Button
         variant="outline"
-        className="w-50 h-50 flex-shrink-0 border-dashed border-2 text-gray-500 hover:text-cyan-600 hover:border-cyan-600 transition-colors"
+        className="w-50 h-16 my-4 flex-shrink-0 border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold hover:border-cyan-600 transition-colors"
         onClick={() => {
           if (fileInputRef.current) {
             handlePlusClick(fileInputRef);
           }
         }}
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="w-5 h-5" /> <>Adicionar arquivo</>
       </Button>
       <input
         type="file"
@@ -29,7 +29,7 @@ const UploadFileButton: React.FC = () => {
           }
         }}
       />
-    </>
+    </div>
   )
 };
 

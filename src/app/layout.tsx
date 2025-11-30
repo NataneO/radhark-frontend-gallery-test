@@ -3,7 +3,7 @@ import "./globals.css";
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>){  
   return (
     <html lang="en">
-      <body>
+      <body className="bg-stone-50">
         {children}
       </body>
     </html>

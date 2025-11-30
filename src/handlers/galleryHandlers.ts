@@ -26,17 +26,11 @@ export async function handleFileUpload(
 export const handlePlusClick = (fileInputRef: React.RefObject<HTMLInputElement  | null>) => {
     fileInputRef?.current?.click();
 };
-  
 
- export const handleScroll = (
-   containerRef: React.RefObject<HTMLDivElement | null>,
-  nextPageToken: string | null,
-  onLoadMore: () => void
-) => {
-  if (containerRef.current) {
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-    if (scrollTop + clientHeight >= scrollHeight - 5 && nextPageToken) {
-      onLoadMore();
-    }
+
+export const handleScroll = (nextPageToken: string | null, loadNextPage: () => void) => {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+  if (scrollTop + clientHeight >= scrollHeight && nextPageToken) {
+    loadNextPage();
   }
 };

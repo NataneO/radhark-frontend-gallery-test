@@ -1,21 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-.scrollbar-thin::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  margin-right: 10px;
-}
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #939be4;
-  border-radius: 10px;
-}
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-button {
-  display: none;
-}

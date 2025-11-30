@@ -10,12 +10,14 @@ const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
   return (
     <>
       {items.map((item, index) => (
+       
         <Thumbnail
           key={index}
           url={item.url}
           isActive={index === selectedIndex}
           onClick={() => setSelectedIndex(index)}
-        />
+          />
+        
       ))}
     </>
   );

@@ -1,7 +1,13 @@
+import UploadFileButton from "./UploadFileButton";
+
 const GalleryHeader: React.FC = () => (
+  <>
+     <UploadFileButton />
   <div className="flex items-center justify-center h-[300px]">
+           
     <h1 className="text-4xl font-extrabold text-center">Galeria</h1>
-  </div>
+    </div>
+    </>
 );
 
 export default GalleryHeader;

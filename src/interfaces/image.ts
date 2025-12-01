@@ -5,3 +5,10 @@ export interface ImageInfo { //imageData reserved
 }
 
 
+export interface ImageModalProps {
+  item: ImageInfo;
+  isOpen: boolean;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+}

@@ -75,7 +75,7 @@ export const useImages = () => {
 
 
    const refreshPageView = () => {
-      console.log("entrou aqui")
+    
     fetchImages(null);
   };
 

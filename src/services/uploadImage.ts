@@ -1,4 +1,5 @@
 import { BASE_URL, BEARER_TOKEN } from "@/utils/apiConfig";
+import { toast } from "sonner";
 
 
 export async function uploadSignedUrl( file: File// PASSO 1
@@ -32,10 +33,12 @@ export async function uploadImageToSignedUrl(signedUrl: string, file: File) {//P
   });
 
   if (!uploadResponse.ok) {
-        throw new Error('Failed to save image');
+    toast("Faha ao salvar imagem. Tente novamente mais tarde.")
+    throw new Error('Failed to save image');
+    
       }
 
-      console.log('Image saved successfully');
+  
 
   return uploadResponse
 }
@@ -50,7 +53,8 @@ export async function uploadUrlMetadata(signedUrl: string) { // PASSO 3
       },
       body: JSON.stringify({ url: signedUrl.split("?")[0] }),
     });
-
+toast("Imagem adicionada com sucesso.")
+  
   return saveResponse
 }
 

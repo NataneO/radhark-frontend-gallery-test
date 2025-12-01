@@ -18,7 +18,10 @@ export function GalleryContainer() {
   }, [nextPageToken, loadNextPage]);
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between h-full mb-4">
+      {
+        //colocar mb so no fim da ultima  
+      }
       <GalleryHeader refreshPageView={refreshPageView} />
       <GalleryGrid
         items={items}

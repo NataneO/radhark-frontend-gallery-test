@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 import Thumbnail from '@/components/ui/thumbnail';
 import { ImageInfo } from "@/interfaces/image";
-import ImageModal from './ImageModal';
+import ImageModal from "./ImageModal";
 
 interface GalleryImageProps {
   items: Array<ImageInfo>;
 }
 
 const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const selectItem = (index: number) => {
+    setSelectedIndex(index);
+    setIsModalOpen(true);
+  }
 
   const closeModal = () => {
-    setSelectedIndex(-1);
+    setIsModalOpen(false);
   }
 
   const nextImage = () => {
@@ -19,8 +25,8 @@ const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
   }
 
   const prevImage = () => {
-      setSelectedIndex((prevIndex) => (prevIndex - 1 + items.length) % items.length);
-    }
+    setSelectedIndex((prevIndex) => (prevIndex - 1 + items.length) % items.length);
+  }
 
   return (
     <>
@@ -28,16 +34,17 @@ const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
         <Thumbnail
           key={index}
           item={item}
-          onClick={() => setSelectedIndex(index)}
+          isActive={index === selectedIndex}
+          onClick={() => selectItem(index)}
         />
       ))}
-      {selectedIndex !== -1 && (
+      {isModalOpen && (
         <ImageModal
           item={items[selectedIndex]}
-          isOpen={selectedIndex !== -1}
           onClose={closeModal}
           onNext={nextImage}
           onPrev={prevImage}
+          isOpen={isModalOpen}
         />
       )}
     </>
@@ -45,3 +52,6 @@ const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
 }
 
 export default GalleryImage;
+
+
+

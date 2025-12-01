@@ -13,14 +13,14 @@ const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
     <div className="flex justify-end">
       <Button
         variant="outline"
-        className="w-50 h-16 my-4  border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold"
+        className="w-50 h-16 my-4 flex-shrink-0 border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold hover:border-cyan-600 transition-colors"
         onClick={() => {
           if (fileInputRef.current) {
             handlePlusClick(fileInputRef);
           }
         }}
       >
-        <Plus className="w-5 h-5" /> Adicionar 
+        <Plus className="w-5 h-5" /> Adicionar arquivo
       </Button>
       <input
         type="file"

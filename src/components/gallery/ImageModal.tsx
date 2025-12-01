@@ -20,7 +20,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ item, isOpen, onClose, onNext, 
           <DialogTitle>{formatDate(item.created_at)}</DialogTitle>
              <Button className="absolute right-10 top-5" onClick={onClose}>X</Button>
           </DialogHeader>
-        <img src={item.url} alt="Selected" className="max-w-[80%] h-[500px] m-auto" />
+        <img src={item.url} alt="Selected" className="max-w-[80%] h-[200px] md:h-[300px] lg:h-[400px] xl:h-[500px] m-auto" />
           <DialogFooter className='flex justify-items-center'>
           <Button onClick={onPrev} variant="outline">Previous</Button>
           <Button onClick={onNext} variant="outline">Next</Button>

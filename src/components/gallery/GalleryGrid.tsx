@@ -1,7 +1,7 @@
 'use client'
 
 import { GalleryGridProps } from '@/interfaces/gallery';
-import GalleryImage from './GalleryImage';
+import GalleryContent from './GalleryContent';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const SkeletonBody = () => {
@@ -25,7 +25,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ items, loading, error }) => {
         {!loading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
 
-        <GalleryImage items={items}/>
+        <GalleryContent items={items}/>
         </div>
         )}
       </div>

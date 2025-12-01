@@ -3,11 +3,11 @@ import Thumbnail from '@/components/ui/thumbnail';
 import { ImageInfo } from "@/interfaces/image";
 import ImageModal from "./ImageModal";
 
-interface GalleryImageProps {
+interface GalleryContentProps {
   items: Array<ImageInfo>;
 }
 
-const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
+const GalleryContent: React.FC<GalleryContentProps> = ({ items }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,7 +51,7 @@ const GalleryImage: React.FC<GalleryImageProps> = ({ items }) => {
   );
 }
 
-export default GalleryImage;
+export default GalleryContent;
 
 
 

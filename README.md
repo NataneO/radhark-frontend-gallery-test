@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Radhark Gallery Frontend Teste
 
-## Getting Started
+Esse projeto é de galeria de imagens interativa e de alta performance desenvolvido como solução para o desafio de front-end da empresa Radhark. O foco do projeto é demonstrar robustez no fluxo de dados, alem de oferecer uma excelente experiência ao usuario (UX) através de Optimistic UI e design kit moderno.
 
-First, run the development server:
+## Links Uteis
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Acesse aqui](https://galeria-radhark.vercel.app/) a aplicação hospedada na vercel
+
+## Funcionalidades chave & conformidade com o teste
+
+Este projeto cumpre os requisitos do teste, focando-se na integração com o backend para o fluxo de persistência de dados.
+
+### Funcionalidades
+
+- **Listagem e Exibição**: Exibição de fotos em formato de grelha (grid).
+- **Controle de layout**: Botoes que permitem ao usuario o controle e disposicao do layout, com variação de tamanhos (Small, Medium, Large)
+- **Rolagem Infinita**: Carrega novas páginas de imagens automaticamente, com estado de bloqueio (`isFetchingNextPage`) para prevenir chamadas duplicadas à API e um indicador de "Fim da Galeria".
+- **Listagem de Imagens (GET)**: Integração avançada para realizar `GET /api/v1/images` e exibir a lista armazenada.
+- **URL Assinada (Upload)**: Implementa o fluxo de segurança do backend: `POST /signed` para obter URL assinada e, em seguida, `PUT` para o armazenamento.
+- **Upload Otimista (Optimistic UI)**: Ao selecionar um arquivo, um placeholder (preview/skeleton) é exibido imediatamente, garantindo uma UX fluida enquanto o upload assíncrono ocorre.
+- **Persistência (POST)**: Envia metadados (URL final) para `POST /api/v1/images` após o envio do arquivo ser concluído.
+- **Segurança**: Todas as requisições à API (GET, POST) são autenticadas via cabeçalho `Authorization: Bearer <TOKEN>`.
+
+## Desafios Técnicos Resolvidos
+
+A implementação do Optimistic UI e do Infinite Scroll introduziram complexidades de estado e sincronização que exigiram refatoração cuidadosa:
+
+1. **Conflito de Chaves (Keys) e Duplicação de Elementos**
+   - **Problema**: A falha mais crítica foi a colisão de chaves entre os itens para preview otimista (Optimistic UI), que foram criados no frontend com IDs temporários,  e os itens reais (retornados pela API). Isso resultou em duplicações massivas e reordenação desordenada da galeria após a rolagem e o refresh da página.
+   - **Solução**: Implementação de um slug unico (nome-do-arquivo-timestamp) para a preview otimista. A chave final do React (key) foi então definida condicionalmente em `GalleryContent.tsx`. Esta transição de chave estável resolveu definitivamente os problemas de duplicação.
+
+2. **Estabilidade do Infinite Scroll**
+   - **Problema**: O scroll listener era disparado múltiplas vezes antes que o fetch da próxima página fosse concluído. Isso estava sobrecarregando a API e causando a duplicação dos mesmos itens na galeria.
+   - **Solução**: Foi feita a centralizacao total da lógica de scroll no `useImages.ts`, alem da adição de um estado de bloqueio (`isFetchingNextPage`) que impede que novas requisições sejam enviadas até que o carregamento da página anterior termine. Isso garante a integridade dos dados e a estabilidade.
+
+3. **Integração do React Hook Form (RHF) com Input Oculto**
+   - **Problema**: Integrar o RHF com o input `type="file"` oculto ( que foi ocultado visando uma maior versatilidade de estilizacao). A submissão falhava porque o RHF e a ref manual do botão entravam em conflito, e assim,  o RHF não era notificado sobre o arquivo selecionado, o que resultava na ausência de requisição de upload.
+   - **Solução**: Foi feita a separação das responsabilidades:
+     - O botão apenas aciona o clique manual na input.
+     - O `onChange` do input foi customizado (`handleFileSelect`) para primeiro chamar o `onChange` interno do RHF (para atualizar o estado) e, em seguida, forçar a submissão via `handleSubmit(onSubmit)()`.
+
+## Tech Stack & Arquitetura
+
+- **Framework**: Next.js 16.0.4 (App Router).
+- **Estilização**: Tailwind CSS 4+ e Design System com Shadcn/Radix.
+- **Gerenciamento de Estado**: Zustand (para o estado de Optimistic UI).
+- **Formulários**: React Hook Form.
+- **Performance**: Implementação de `URL.revokeObjectURL` para limpeza de memória após previews otimistas.
+
+##  Executando o projeto
+
+### 1. Variáveis de Ambiente
+
+Crie um arquivo `.env.local` na raiz do projeto:
+
+```plaintext
+NEXT_PUBLIC_API_BASE_URL="https://frontend-challenge-backend-842303020925.us-east1.run.app"
+NEXT_PUBLIC_API_BEARER_TOKEN="SEU_TOKEN_SECRETO_AQUI" 
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Instalação https://galeria-radhark.vercel.app/e Execução
+Instalação das dependências
+```plaintext
+npm install
+```
+# ou
+```plaintext
+yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Inicia o servidor de desenvolvimento
+```plaintext
+npm run dev
+```
+# ou
+```plaintext
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Abra http://localhost:3000 para começar a usar a galeria.

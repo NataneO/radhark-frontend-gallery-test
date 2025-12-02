@@ -2,6 +2,7 @@ import { handleFileUpload, handlePlusClick } from "@/handlers/galleryHandlers";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
+import React from "react"; 
 
 interface UploadFileButtonProps {
   onUpload: () => void;
@@ -9,16 +10,27 @@ interface UploadFileButtonProps {
 const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const onChangeHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (fileInputRef.current) {
+      handleFileUpload(event, fileInputRef, onUpload);
+    }
+  };
+
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end p-4">
       <Button
         variant="outline"
-        className="w-50 h-16 my-4 flex-shrink-0 border-solid border-2 rounded-3xl text-gray-50 bg-cyan-600 hover:bg-cyan-700 hover:font-bold hover:border-cyan-600 transition-colors"
+        size="lg"
+        className="w-56 h-14 border-solid border-2 rounded-2xl 
+                   text-white bg-cyan-600 border-cyan-600 shadow-lg
+                   hover:bg-cyan-700 hover:font-bold hover:border-cyan-700
+                   transition-colors"
         onClick={() => {
           if (fileInputRef.current) {
             handlePlusClick(fileInputRef);
           }
         }}
+        title="Adicionar novo arquivo de imagem"
       >
         <Plus className="w-5 h-5" /> Adicionar arquivo
       </Button>
@@ -26,12 +38,8 @@ const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
         type="file"
         ref={fileInputRef}
         style={{ display: 'none' }}
-        onChange={async (event) => {
-          if (fileInputRef.current) {
-            await handleFileUpload(event, fileInputRef);
-            onUpload();
-          }
-        }}
+        onChange={onChangeHandler}
+        accept="image/jpeg,image/png,image/gif,image/webp" 
       />
     </div>
   );

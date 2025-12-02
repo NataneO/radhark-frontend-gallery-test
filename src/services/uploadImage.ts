@@ -1,9 +1,6 @@
 import { BASE_URL, BEARER_TOKEN } from "@/utils/apiConfig";
-import { toast } from "sonner";
 
-
-export async function uploadSignedUrl( file: File// PASSO 1
-) {
+export async function uploadSignedUrl( file: File) {
   
       const response = await fetch(`${BASE_URL}/api/v1/signed`, {
         method: 'POST',
@@ -15,7 +12,7 @@ export async function uploadSignedUrl( file: File// PASSO 1
       });
 
    if (!response.ok) {
-          throw new Error('Failed to upload file');
+        throw new Error(`Failed to obtain signed URL from API. Status: ${response.status}`);
    }
    const data = await response.json();
   const signedUrl = data.url;
@@ -23,7 +20,7 @@ export async function uploadSignedUrl( file: File// PASSO 1
   return signedUrl
 }
 
-export async function uploadImageToSignedUrl(signedUrl: string, file: File) {//PASSO 2
+export async function uploadImageToSignedUrl(signedUrl: string, file: File) {
   const uploadResponse = await fetch(signedUrl, {
     method: 'PUT',
     body: file,
@@ -33,18 +30,15 @@ export async function uploadImageToSignedUrl(signedUrl: string, file: File) {//P
   });
 
   if (!uploadResponse.ok) {
-    toast("Faha ao salvar imagem. Tente novamente mais tarde.")
-    throw new Error('Failed to save image');
+    throw new Error(`Failed to upload file to storage. Status: ${uploadResponse.status}`);
     
       }
-
-  
 
   return uploadResponse
 }
 
 
-export async function uploadUrlMetadata(signedUrl: string) { // PASSO 3
+export async function uploadUrlMetadata(signedUrl: string) { 
    const saveResponse = await fetch(`${BASE_URL}/api/v1/images`, {
       method: 'POST',
       headers: {
@@ -53,8 +47,10 @@ export async function uploadUrlMetadata(signedUrl: string) { // PASSO 3
       },
       body: JSON.stringify({ url: signedUrl.split("?")[0] }),
     });
-toast("Imagem adicionada com sucesso.")
+
+  if (!saveResponse.ok) {
+    throw new Error(`Failed to save image metadata. Status: ${saveResponse.status}`);
+  }
   
   return saveResponse
 }
-

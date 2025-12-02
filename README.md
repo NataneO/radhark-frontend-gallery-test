@@ -13,6 +13,7 @@ Este projeto cumpre os requisitos do teste, focando-se na integração com o bac
 ### Funcionalidades
 
 - **Listagem e Exibição**: Exibição de fotos em formato de grelha (grid).
+- **Navegação direcional**: A navegação no dialog atraves das setas direcionais foi implementada. Alem disso, a modal se fecha ao apertar ESC.
 - **Controle de layout**: Botoes que permitem ao usuario o controle e disposicao do layout, com variação de tamanhos (Small, Medium, Large)
 - **Rolagem Infinita**: Carrega novas páginas de imagens automaticamente, com estado de bloqueio (`isFetchingNextPage`) para prevenir chamadas duplicadas à API e um indicador de "Fim da Galeria".
 - **Listagem de Imagens (GET)**: Integração avançada para realizar `GET /api/v1/images` e exibir a lista armazenada.

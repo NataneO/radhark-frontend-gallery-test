@@ -21,6 +21,7 @@ Este projeto cumpre os requisitos do teste, focando-se na integração com o bac
 - **Upload Otimista (Optimistic UI)**: Ao selecionar um arquivo, um placeholder (preview/skeleton) é exibido imediatamente, garantindo uma UX fluida enquanto o upload assíncrono ocorre.
 - **Persistência (POST)**: Envia metadados (URL final) para `POST /api/v1/images` após o envio do arquivo ser concluído.
 - **Segurança**: Todas as requisições à API (GET, POST) são autenticadas via cabeçalho `Authorization: Bearer <TOKEN>`.
+- **Feedback por Toasts**: Feedback visual em tempo real usando a biblioteca sonner para informar o utilizador sobre o status do upload (carregando, sucesso ou falha na validação/API).
 
 ## Desafios Técnicos Resolvidos
 

@@ -58,7 +58,7 @@ NEXT_PUBLIC_API_BASE_URL="https://frontend-challenge-backend-842303020925.us-eas
 NEXT_PUBLIC_API_BEARER_TOKEN="SEU_TOKEN_SECRETO_AQUI" 
 ```
 
-### 2. Instalação https://galeria-radhark.vercel.app/e Execução
+### 2. Instalação e Execução
 Instalação das dependências
 ```plaintext
 npm install

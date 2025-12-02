@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 const ImageModal: React.FC<ImageModalProps> = ({ item, isOpen, onClose, onNext, onPrev }) => {
   const CYAN_COLOR = 'text-cyan-400 drop-shadow-lg'; 
-  const ICON_SIZE = 'size-20'; 
+  const ICON_SIZE = 'lg:size-20 md:size-10 sm:size-5'; 
   const BUTTON_SIZE_CLASS = 'size-[10rem]'; 
   const Z_INDEX_CONTROLS = 'z-[60]'; 
 

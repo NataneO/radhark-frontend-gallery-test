@@ -1,7 +1,7 @@
-import { ImageInfo } from "./image";
+import { GalleryItem } from "./image";
 
 interface ThumbnailProps {
-  item: ImageInfo;
+  item: GalleryItem;
   isActive?: boolean;
   onClick: () => void;
 }

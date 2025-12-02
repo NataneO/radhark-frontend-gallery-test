@@ -2,26 +2,37 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GalleryData } from '@/interfaces/gallery';
 import { BEARER_TOKEN, LIST_IMAGES_ENDPOINT } from '@/utils/apiConfig'; 
+import { useGalleryStore } from '@/stores/galleryStore'; 
+import { GalleryItem } from '@/interfaces/image';
 
 const DEFAULT_PAGE_SIZE = 15;
+const SCROLL_THRESHOLD = 200; 
 
 export const useImages = () => {
   const [items, setItems] = useState<GalleryData['items']>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false); 
   const [error, setError] = useState<string | null>(null);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const pageSize = DEFAULT_PAGE_SIZE;
+  
+  const { optimisticItems, clearOptimisticItems } = useGalleryStore(); 
 
-  const fetchImages = useCallback(async (tokenToUse: string | null) => {
+  const fetchImages = useCallback(async (tokenToUse: string | null, isRefresh = false) => {
+    const isNextPageLoad = !!tokenToUse && !isRefresh;
+
     try {
-      if (!tokenToUse) {
-        setLoading(true);
+      if (!tokenToUse && !isRefresh) {
+        setLoading(true); 
       }
+      if (isNextPageLoad) {
+         setIsFetchingNextPage(true);
+      }
+      
       setError(null);
 
       if (!BEARER_TOKEN) {
         throw new Error("Authentication bearer token not configured.");
-    
       }
 
       const headers = {
@@ -29,6 +40,7 @@ export const useImages = () => {
       };
 
       let url = `${LIST_IMAGES_ENDPOINT}?page_size=${pageSize}`;
+      
       if (tokenToUse) {
         url += `&page_token=${tokenToUse}`;
       }
@@ -45,11 +57,11 @@ export const useImages = () => {
       if (!tokenToUse) {
         setItems(data.items);
       } else {
-
         setItems(prevItems => [...prevItems, ...data.items]);
       }
 
       setNextPageToken(data.page_token || null);
+      
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -57,43 +69,70 @@ export const useImages = () => {
         setError('Unknown error');
       }
     } finally {
-      if (!tokenToUse) {
-        setLoading(false);
+     
+      if (isNextPageLoad) {
+          setIsFetchingNextPage(false);
       }
-      setLoading(false);
+      if (!tokenToUse) {
+          setLoading(false);
+        
+          if (isRefresh) {
+            clearOptimisticItems(); 
+          }
+      }
     }
-  }, [pageSize]); 
+  }, [pageSize, clearOptimisticItems]); 
 
 
-  const loadNextPage = () => {
-    if (nextPageToken === null) {
-      console.log('cant load next page. token not found');
+  const loadNextPage = useCallback(() => {
+    if (nextPageToken === null || isFetchingNextPage) {
+      console.log('Cant load next page. Token not found or already fetching.');
       return;
     }
-    fetchImages(nextPageToken);
-  };
+    fetchImages(nextPageToken, false); 
+  }, [nextPageToken, isFetchingNextPage, fetchImages]);
 
 
-   const refreshPageView = () => {
-    
-    fetchImages(null);
-  };
+   const refreshPageView = useCallback(() => {
+    fetchImages(null, true); 
+  }, [fetchImages]);
 
   useEffect(() => {
-  
-    fetchImages(null);
+    fetchImages(null, false);
   }, [fetchImages]);
+
+  useEffect(() => {
+    const scrollHandler = () => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      
+      if (
+          !isFetchingNextPage && 
+          nextPageToken !== null &&
+          scrollTop + clientHeight >= scrollHeight - SCROLL_THRESHOLD
+      ) {
+        loadNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', scrollHandler);
+    
+    return () => {
+      window.removeEventListener('scroll', scrollHandler);
+    }
+  }, [isFetchingNextPage, nextPageToken, loadNextPage]);
+
+  
+  const combinedItems: GalleryItem[] = [...optimisticItems, ...items];
 
 
   return {
-      items,
-      loading,
+      items: combinedItems, 
+      loading: loading && combinedItems.length === 0, 
       error,
       pageSize,
       nextPageToken,
       loadNextPage,
-      refreshPageView
+      refreshPageView,
+      isFetchingNextPage 
   };
 };
-  
- 

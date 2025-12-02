@@ -11,10 +11,10 @@ function createUniqueSlug(fileName: string): string {
 
 export async function handleFileUpload(
   event: React.ChangeEvent<HTMLInputElement>,
-  fileInputRef: React.RefObject<HTMLInputElement | null>,
+  fileInputRef: React.RefObject<HTMLInputElement | null>, 
   onRefresh: () => void,
 ) {
-  const file = event.target.files?.[0];
+  const file = event.target.files?.[0]; 
   
   if (file) {
     const uniqueSlug = createUniqueSlug(file.name); 
@@ -29,21 +29,12 @@ export async function handleFileUpload(
       isOptimistic: true,
       tempId: uniqueSlug, 
     });
-    
-    if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-    }
 
     const uploadPromise = new Promise(async (resolve, reject) => {
       try {
-        console.log("File selected:", file.name);
-        
         const signedUrl = await uploadSignedUrl(file);
-        
         await uploadImageToSignedUrl(signedUrl, file); 
-
         await uploadUrlMetadata(signedUrl);
-
         resolve(null); 
       } catch (error) {
         removeOptimisticItem(uniqueSlug); 
@@ -54,15 +45,15 @@ export async function handleFileUpload(
     });
 
     toast.promise(uploadPromise, {
-      loading: `A carregar ${file.name}...`,
-      success: `${file.name} adicionado com sucesso!`,
+      loading: `Carregando ${file.name}...`,
+      success: `${file.name} foi adicionado com sucesso! `,
       error: (err) => {
         return err instanceof Error ? `Falha ao carregar: ${err.message}` : "Falha ao carregar imagem. Tente novamente.";
       },
     });
   }
 }
-  
+
 export const handlePlusClick = (fileInputRef: React.RefObject<HTMLInputElement  | null>) => {
-    fileInputRef?.current?.click();
+    fileInputRef?.current?.click(); 
 };

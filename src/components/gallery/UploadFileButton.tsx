@@ -1,10 +1,11 @@
-import React from "react";
 import { handleFileUpload, handlePlusClick } from "@/handlers/galleryHandlers";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
+import React from "react";
 import { useForm, FieldValues } from "react-hook-form"; 
 import { cn } from "@/lib/utils";
+import { toast } from "sonner"; 
 
 interface UploadFileButtonProps {
   onUpload: () => void;
@@ -14,10 +15,14 @@ interface UploadFormValues extends FieldValues {
     file: FileList;
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5mb
+const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
+
 const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const { register, handleSubmit, reset, trigger } = useForm<UploadFormValues>();
+  const { register, handleSubmit, reset, trigger, formState: { errors } } = useForm<UploadFormValues>();
 
   const onSubmit = async (data: UploadFormValues) => {
       const file = data.file?.[0];
@@ -34,18 +39,27 @@ const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
       reset();
   };
 
-  const { ref: rhfRef, onChange: rhfOnChange, ...restOfRegister } = register("file", { required: true });
+  const { ref: rhfRef, onChange: rhfOnChange, ...restOfRegister } = register("file", { 
+    required: "Por favor, selecione um arquivo.",
+    validate: {
+      lessThanMax: (fileList) => fileList[0].size < MAX_FILE_SIZE || `O arquivo deve ter no máximo 5 MB.`,
+      acceptedTypes: (fileList) => ACCEPTED_FILE_TYPES.includes(fileList[0].type) || "Formato de arquivo não suportado (apenas JPG, PNG, GIF, WEBP)."
+    }
+  });
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     rhfOnChange(event); 
-    
     const isValid = await trigger("file"); 
     
     if (isValid) {
         handleSubmit(onSubmit)(); 
+    } else {
+        const errorMessage = errors.file?.message;
+        if (errorMessage) {
+            toast.error(`Erro de Validação: ${errorMessage}`);
+        }
     }
   };
-
 
   return (
     <div className="flex justify-end p-4">
@@ -73,11 +87,11 @@ const UploadFileButton: React.FC<UploadFileButtonProps> = ({ onUpload }) => {
           {...restOfRegister}
           onChange={handleFileSelect} 
           ref={(e) => {
-            fileInputRef.current = e; 
             rhfRef(e); 
+            fileInputRef.current = e; 
           }}
           style={{ display: 'none' }}
-          accept="image/jpeg,image/png,image/gif,image/webp" 
+          accept={ACCEPTED_FILE_TYPES.join(', ')} 
         />
       </form>
     </div>

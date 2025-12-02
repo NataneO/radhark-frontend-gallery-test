@@ -1,9 +1,12 @@
 import { ImageInfo } from "./image";
+import { GalleryItem } from "./image";
 
 export interface GalleryGridProps {
-  items: Array<ImageInfo>;
+  items: Array<GalleryItem>; 
   loading: boolean;
   error: string | null;
+  isFetchingNextPage: boolean;
+  hasMore: boolean; 
 }
 
 export interface GalleryData {
@@ -12,3 +15,4 @@ export interface GalleryData {
   page_size: number;
   items: ImageInfo[];
 }
+

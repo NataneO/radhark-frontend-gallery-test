@@ -2,7 +2,6 @@ import { uploadImageToSignedUrl, uploadSignedUrl, uploadUrlMetadata } from '@/se
 import { toast } from "sonner";
 import { useGalleryStore } from "@/stores/galleryStore"; 
 
-
 function createUniqueSlug(fileName: string): string {
     const sanitizedName = fileName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
     const timestamp = Date.now(); 
@@ -14,6 +13,7 @@ export async function handleFileUpload(
   fileInputRef: React.RefObject<HTMLInputElement | null>, 
   onRefresh: () => void,
 ) {
+
   const file = event.target.files?.[0]; 
   
   if (file) {
@@ -29,6 +29,7 @@ export async function handleFileUpload(
       isOptimistic: true,
       tempId: uniqueSlug, 
     });
+    
 
     const uploadPromise = new Promise(async (resolve, reject) => {
       try {
